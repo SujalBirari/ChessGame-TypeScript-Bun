@@ -102,7 +102,10 @@ const result = await Bun.build({
   //   main.abc123.js → browser re-fetches only when the content actually changes
   // In development we keep the plain name so the HTML doesn't need to change.
   naming: {
-    entry: isProd ? "[name].[hash].[ext]" : "[name].[ext]",
+    // Always output the entry as "bundle.js" in dev so index.html can
+    // reference it with a fixed name. In prod we add a content hash for
+    // long-lived caching — and we update index.html below to match.
+    entry: isProd ? "bundle.[hash].[ext]" : "bundle.[ext]",
     chunk: isProd ? "[name].[hash].[ext]" : "[name].[ext]",
     asset: isProd ? "[name].[hash].[ext]" : "[name].[ext]",
   },
@@ -149,5 +152,28 @@ if (warnings.length > 0) {
   console.log(`\n⚠️   ${warnings.length} warning(s):`);
   for (const w of warnings) console.warn(`  • ${w.message}`);
 }
+
+// ── Copy public/index.html → dist/index.html ──────────────────────────────────
+// Vercel (and any static host) needs index.html inside the output directory.
+// In production we also rewrite the <script src> to point to the hashed bundle.
+const htmlSrc = Bun.file("./public/index.html");
+let html = await htmlSrc.text();
+
+if (isProd) {
+  // Find the produced bundle entry (e.g. "bundle.abc123.js")
+  const bundleEntry = result.outputs.find(
+    (o) => o.kind === "entry-point" && o.path.endsWith(".js")
+  );
+  if (bundleEntry) {
+    const bundleFilename = bundleEntry.path
+      .replace(process.cwd() + "/", "")
+      .replace(process.cwd() + "\\", "")
+      .replace(/^dist[\/\\]/, "");
+    html = html.replace(/\.\/(bundle\..*?\.js|bundle\.js)/, `./${bundleFilename}`);
+  }
+}
+
+await Bun.write("./dist/index.html", html);
+console.log("📄  Copied public/index.html → dist/index.html");
 
 console.log(`\n🏁  Done.\n`);
