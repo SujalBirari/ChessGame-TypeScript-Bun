@@ -1,0 +1,22 @@
+{
+  "name": "chess-game",
+  "module": "server.ts",
+  "type": "module",
+  "private": true,
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.3.0",
+    "@types/bun": "latest",
+    "tailwindcss": "^4.3.0"
+  },
+  "scripts": {
+    "build:ts": "bun build src/main.ts --outfile=dist/bundle.js",
+    "build:css": "bunx @tailwindcss/cli -i ./src/style.css -o ./dist/style.css",
+    "build": "bun run build:ts && bun run build:css",
+    "watch:ts": "bun build src/main.ts --outfile=dist/bundle.js --watch",
+    "watch:css": "bunx @tailwindcss/cli -i ./src/style.css -o ./dist/style.css --watch",
+    "start": "bun run server.ts"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  }
+}

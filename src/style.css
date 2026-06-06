@@ -1,0 +1,47 @@
+@import "tailwindcss";
+@import url("https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&display=swap");
+
+/* ── Global reset & dark background ───────────────────────────── */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+  font-family: "Outfit", system-ui, sans-serif;
+}
+
+body {
+  /* Rich dark gradient */
+  background:
+    radial-gradient(ellipse at 20% 10%, rgba(30, 80, 50, 0.55) 0%, transparent 55%),
+    radial-gradient(ellipse at 80% 90%, rgba(20, 50, 80, 0.55) 0%, transparent 55%),
+    linear-gradient(145deg, #0d1117 0%, #111827 40%, #0f1e14 100%);
+  background-attachment: fixed;
+  min-height: 100vh;
+}
+
+/* Subtle chessboard texture overlay */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background-image:
+    repeating-conic-gradient(rgba(255,255,255,0.018) 0% 25%, transparent 0% 50%);
+  background-size: 48px 48px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+#app {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+}
